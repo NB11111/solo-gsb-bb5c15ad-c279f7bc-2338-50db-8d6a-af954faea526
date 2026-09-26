@@ -1,0 +1,15 @@
+{
+  "name": "srt-revision-aligner",
+  "version": "1.0.0",
+  "description": "本地运行的纪录片字幕校订对齐工具：旧版 SRT 与逐行修订台词的全局文本对齐",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "4.19.2"
+  }
+}

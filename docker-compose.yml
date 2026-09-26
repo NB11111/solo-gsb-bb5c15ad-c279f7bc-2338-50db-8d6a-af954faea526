@@ -1,0 +1,11 @@
+services:
+  srt-aligner:
+    build: .
+    image: srt-revision-aligner:latest
+    container_name: srt-revision-aligner
+    ports:
+      - "3000:3000"
+    environment:
+      # 容器内监听地址/端口；如需改宿主机映射端口，改左侧宿主机端口即可
+      - PORT=3000
+    restart: unless-stopped

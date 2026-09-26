@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>纪录片字幕校订 · 本地对齐工具</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="topbar">
+  <h1>纪录片字幕校订 <span class="sub">旧版 SRT × 逐行修订台词 · 本地运行</span></h1>
+</header>
+
+<main class="container">
+
+  <!-- 输入区 -->
+  <section class="card" id="inputCard">
+    <div class="grid-2">
+      <div class="pane">
+        <h2>① 旧版 SRT（带时码）</h2>
+        <div class="file-row">
+          <label class="btn-file">
+            选择 .srt 文件
+            <input type="file" id="oldFile" accept=".srt,.txt" hidden />
+          </label>
+          <span id="oldMeta" class="meta">未选择文件，也可直接粘贴</span>
+        </div>
+        <textarea id="oldSrt" placeholder="粘贴带时码的旧版 SRT，例如：&#10;1&#10;00:00:01,000 --> 00:00:03,000&#10;这是一条旧字幕"></textarea>
+      </div>
+      <div class="pane">
+        <h2>② 逐行修订台词</h2>
+        <div class="file-row">
+          <label class="btn-file">
+            选择 .txt 文件
+            <input type="file" id="newFile" accept=".txt,.srt" hidden />
+          </label>
+          <span id="newMeta" class="meta">未选择文件，也可直接粘贴（一行一条）</span>
+        </div>
+        <textarea id="newText" placeholder="粘贴逐行修订台词，一行一条；粘贴 SRT 也可自动提取文本"></textarea>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="alignBtn" class="primary">开始全局对齐</button>
+      <span id="statusMsg" class="status-msg"></span>
+    </div>
+  </section>
+
+  <!-- 结果区 -->
+  <section class="card hidden" id="resultCard">
+    <div class="result-head">
+      <h2>③ 校订配对与时码</h2>
+      <div class="legend">
+        <span class="tag ok">✓ 正常</span>
+        <span class="tag pending">! 待处理</span>
+        <span class="muted">可直接修改配对旧序号、时码与台词</span>
+      </div>
+    </div>
+    <div class="actions wrap">
+      <button id="recomputeBtn" title="按当前配对重新自动分配全部时码（拆分按字数、合并用覆盖时段、新增行按间隙插值）">
+        按配对重排时码
+      </button>
+      <button id="applyPairBtn">应用配对修改</button>
+      <button id="addRowBtn">末尾新增一行</button>
+      <button id="previewBtn" class="primary">预览并下载 SRT</button>
+      <span id="pendingCount" class="status-msg"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="rowTable">
+        <thead>
+          <tr>
+            <th class="c-status">#</th>
+            <th class="c-type">类型</th>
+            <th class="c-ids">配对旧序号<br /><small>逗号分隔，留空=新增</small></th>
+            <th class="c-src">旧台词原文</th>
+            <th class="c-text">修订台词（可编辑）</th>
+            <th class="c-time">开始时码</th>
+            <th class="c-time">结束时码</th>
+            <th class="c-del"></th>
+          </tr>
+        </thead>
+        <tbody id="rowBody"></tbody>
+      </table>
+    </div>
+
+    <details class="ref-box" id="refBox">
+      <summary>未匹配的旧字幕（参考，不导出；点击可查看原文与时码）</summary>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="c-status">旧#</th>
+              <th class="c-time">时码</th>
+              <th>原文</th>
+            </tr>
+          </thead>
+          <tbody id="refBody"></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+</main>
+
+<!-- 预览弹窗 -->
+<div class="modal-mask hidden" id="previewMask">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>SRT 预览</h2>
+      <div class="actions">
+        <button id="downloadBtn" class="primary">下载 revised.srt</button>
+        <button id="closePreviewBtn">关闭</button>
+      </div>
+    </div>
+    <p class="muted small" id="previewHint"></p>
+    <pre id="previewText" class="preview-pre"></pre>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
